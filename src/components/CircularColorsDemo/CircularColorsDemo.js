@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import clsx from 'clsx';
 import {
@@ -18,12 +20,22 @@ const COLORS = [
 ];
 
 function CircularColorsDemo() {
-  // TODO: This value should increase by 1 every second:
-  const timeElapsed = 0;
+  const [timeElapsed, setTimeElapsed] = React.useState(0);
+  const [isRunning, setRunning] = React.useState(false);
 
-  // TODO: This value should cycle through the colors in the
-  // COLORS array:
-  const selectedColor = COLORS[0];
+  const selectedColor = COLORS[timeElapsed % COLORS.length];
+
+  React.useEffect(() => {
+    if (isRunning) {
+      const tick = () => setTimeElapsed(current => current + 1)
+
+      const intervalId = window.setInterval(tick, 1000);
+
+      return () => {
+        window.clearInterval(intervalId);
+      }
+    }
+  }, [isRunning])
 
   return (
     <Card as="section" className={styles.wrapper}>
@@ -69,12 +81,19 @@ function CircularColorsDemo() {
           <dd>{timeElapsed}</dd>
         </dl>
         <div className={styles.actions}>
-          <button>
-            <Play />
-            <VisuallyHidden>Play</VisuallyHidden>
-          </button>
-          <button>
-            <RotateCcw />
+          {isRunning ? (
+            <button onClick={() => setRunning(false)}>
+              <Pause />
+              <VisuallyHidden>Pause</VisuallyHidden>
+            </button>
+          ) : (
+            <button onClick={() => setRunning(true)}>
+              <Play/>
+              <VisuallyHidden>Play</VisuallyHidden>
+            </button>
+          )}
+          <button onClick={() => setTimeElapsed(0)}>
+            <RotateCcw/>
             <VisuallyHidden>Reset</VisuallyHidden>
           </button>
         </div>
